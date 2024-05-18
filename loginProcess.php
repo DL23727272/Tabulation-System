@@ -15,15 +15,15 @@ include "myConnection.php";
 
             $hashedPassword = md5($password);
 
-            $query = "SELECT * FROM customer_table WHERE customerName = '$username'";
+            $query = "SELECT * FROM users WHERE username = '$username'";
             $result = mysqli_query($con, $query);
 
             if (mysqli_num_rows($result) == 1) {
                 $row = mysqli_fetch_assoc($result);
                 // Verify hashed password
-                if ($hashedPassword === $row['customerPassword']) {
-                    $customerID = $row['customerID'];
-                    $customerName = $row['customerName'];
+                if ($hashedPassword === $row['password']) {
+                    $customerID = $row['id'];
+                    $customerName = $row['username'];
                     $userType = $row['type'];
                     // Passwords match, login successful
                     $response = [
@@ -31,9 +31,9 @@ include "myConnection.php";
                         'message' => 'Welcome!',
 
                         //retrieve the information para sa cart, admin, ordering
-                        'customerID' => $customerID,
-                        'customerName' => $customerName,
-                        'userType' => $userType
+                        'id' => $customerID,
+                        'username' => $customerName,
+                        'type' => $userType
 
                     ];
                 } else {

@@ -211,8 +211,7 @@
 
       <hr class="container-sm Sborder border-success mt-5 border-2 opacity-50" />
       
-      <!-- END PRODUCT CONTENT -->
-
+    
       <!---Footer-->
       <footer class="mt-5 text-white p-3" style="background-color: #000000;">
         <div class="container-sm d-flex justify-content-between align-items-center">
@@ -337,43 +336,38 @@
       }
     
 
-      function Signup() {
+    function Signup() {
         // Get form data
-        var customerSignUpEmail = $("#customerSignUpEmail").val();
-        var customerSignUpName = $("#customerSignUpName").val();
-        var customerSignUpPassword = $("#customerSignUpPassword").val();
-        var customerPhoneNumber = $("#customerPhoneNumber").val(); 
-        var customerAddress = $("#customerAddress").val(); 
+        var userSignUpName = $("#userSignUpName").val();
+        var userSignUpPassword = $("#userSignUpPassword").val();
         var checkSignUpPassword = $("#checkSignUpPassword").val();
-
-        //check the password if matched
-        if (customerSignUpPassword !== checkSignUpPassword) {
+    
+        // Check if passwords match
+        if (userSignUpPassword !== checkSignUpPassword) {
             alertify.error('Passwords do not match!');
             return; 
         }
-  
-        if (customerSignUpName === "" || customerSignUpPassword === "" || customerSignUpEmail === "" || customerPhoneNumber === "" || customerAddress === "") {
+    
+        // Check for empty fields
+        if (userSignUpName === "" || userSignUpPassword === "" || checkSignUpPassword === "") {
             alertify.error('Empty fields! Please fill all the fields.');
         } else {
             $.ajax({
                 type: "POST",
                 url: "signupProcess.php",
                 data: {
-                    customerSignUpEmail: customerSignUpEmail,
-                    customerSignUpName: customerSignUpName,
-                    customerSignUpPassword: customerSignUpPassword,
-                    customerPhoneNumber: customerPhoneNumber,
-                    customerAddress: customerAddress
+                    userSignUpName: userSignUpName,
+                    userSignUpPassword: userSignUpPassword
                 },
                 dataType: "json",
                 success: function(response) {
                     if (response.status === 'success') {
                         //alertify.success(response.message);
                         Swal.fire({
-                          icon: 'success',
-                          title: response.message,
-                          showConfirmButton: false,
-                          timer: 2000 
+                            icon: 'success',
+                            title: response.message,
+                            showConfirmButton: false,
+                            timer: 2000 
                         });
                         $('#exampleModal').modal('hide');
                     } else {
@@ -387,27 +381,9 @@
                 }
             });
         }
-      }
+    }
+    
 
-       //FOR NOW LOAD PRODUCTS USING ADMINLOADPRODUCTS.PHP  (updated php file to load prodducts here on index page, diko na pinalitan function name)
-       
-       adminLoadProducts();
-
-      function adminLoadProducts() { 
-        $.ajax({
-            url: 'indexFetchProduct.php',
-            success: function (data) { 
-                if (data.trim() === '') {
-                    $('#products').append('<div><p>NO PRODUCTS AVAILABLE</p></div>');
-                } else {
-                    $('#products').append(data);
-                }
-            },
-            error: function () {
-                $('#products').append('<div><p>Error loading products. Please try again later.</p></div>');
-            }
-        });
-      }
     </script>
 </body>
 </html>
