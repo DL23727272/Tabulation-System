@@ -32,7 +32,7 @@ foreach ($tables as $table) {
 }
 
 foreach ($judges as $judgeId => $genders) {
-    echo '<h2 class="fst-italic text-center text-white">Judge ID: ' . htmlspecialchars($judgeId) . '</h2>';
+    echo '<h2 class="fst-italic text-center text-white">Judge No: ' . htmlspecialchars($judgeId) . '</h2>';
     echo ' <h2 class="fst-bold text-center text-white">Overall Score(100 Points)</h2>';
     // Male candidates table
     echo '<h4 class="fst-bold text-center text-white">Male Candidates</h4>';
@@ -48,7 +48,7 @@ foreach ($judges as $judgeId => $genders) {
     echo '<tbody>';
     
     $maleCandidates = $genders['male'];
-    arsort($maleCandidates);  // Sort by total score in descending order
+    arsort($maleCandidates);  
     $rank = 1;
     foreach ($maleCandidates as $candidate => $totalScore) {
         echo '<tr>';
@@ -75,7 +75,7 @@ foreach ($judges as $judgeId => $genders) {
     echo '<tbody>';
     
     $femaleCandidates = $genders['female'];
-    arsort($femaleCandidates);  // Sort by total score in descending order
+    arsort($femaleCandidates);  
     $rank = 1;
     foreach ($femaleCandidates as $candidate => $totalScore) {
         echo '<tr>';

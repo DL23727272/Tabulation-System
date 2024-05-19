@@ -310,7 +310,6 @@
             rows.forEach(row => {
                 row.children[1].children[0].disabled = true;
             });
-            // Include the judgeId in the AJAX data
             $.ajax({
                 url: 'sportsProcess.php',
                 type: 'POST',
@@ -358,18 +357,14 @@
                     scores.push({ row: $(this), score: score });
                 });
                 
-                // Sort scores by descending order
                 scores.sort((a, b) => b.score - a.score);
                 
                 let rank = 1;
                 
                 scores.forEach((item, index) => {
-                    // Check if it's not the first item and the score is the same as the previous item
                     if (index > 0 && item.score === scores[index - 1].score) {
-                        // Assign the same rank as the previous item
                         item.row.find('.table-rank').text(rank);
                     } else {
-                        // Assign the current rank
                         item.row.find('.table-rank').text(rank++);
                     }
                 });
