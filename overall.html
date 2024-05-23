@@ -184,6 +184,10 @@
           <div id="summary-table" class="container mt-5 text-center">
            
           </div>
+          <div class="container mt-5 text-center">
+           <button id="exportPDF" class="btn btn-primary">Export to PDF</button>
+          </div>
+          
         </div>
       </section>
       <!-- END OF Denim CONTENT -->
@@ -254,6 +258,10 @@
             $('#refresh-summary').click(function() {
                 loadSummaryTable();
             });
+        });
+
+        document.getElementById('exportPDF').addEventListener('click', function() {
+          window.location.href = 'exportToPDF.php';
         });
        
       </script>
