@@ -87,5 +87,13 @@ foreach ($femaleCandidates as $candidate => $totalScore) {
     $pdf->TableRow([htmlspecialchars($candidate), number_format($totalScore, 2), $rank++]);
 }
 
-$pdf->Output('D', 'summary.pdf'); // D for download, S for string, I for inline
+$pdfPath = 'D:/xampp/htdocs/3rdyr/Tabulation/results/summary.pdf';
+$pdf->Output('F', $pdfPath);
+
+$response = [
+    'success' => true,
+    'message' => "PDF saved to: $pdfPath"
+];
+
+echo json_encode($response);
 ?>

@@ -260,9 +260,40 @@
             });
         });
 
+       
+
         document.getElementById('exportPDF').addEventListener('click', function() {
-          window.location.href = 'exportToPDF.php';
-        });
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', 'exportToPDF.php', true);
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState === 4) {
+                  if (xhr.status === 200) {
+                      var response = JSON.parse(xhr.responseText);
+                      if (response.success) {
+                          Swal.fire({
+                              icon: 'success',
+                              title: 'PDF Exported Successfully!',
+                              text: response.message
+                          });
+                      } else {
+                          Swal.fire({
+                              icon: 'error',
+                              title: 'PDF Export Failed!',
+                              text: 'An error occurred while exporting the PDF.'
+                          });
+                      }
+                  } else {
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'PDF Export Failed!',
+                          text: 'An error occurred while exporting the PDF.'
+                      });
+                  }
+              }
+          };
+          xhr.send();
+      });
+      
        
       </script>
   </body>
