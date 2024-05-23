@@ -1,99 +1,99 @@
 <?php
-require 'vendor/autoload.php'; 
+    require 'vendor/autoload.php'; 
 
-include "myConnection.php";
+    include "myConnection.php";
 
-use setasign\Fpdi\Fpdi;
-use setasign\Fpdi\PdfReader;
-use setasign\Fpdi\Fpdi as TfpdfFpdi;
+    use setasign\Fpdi\Fpdi;
+    use setasign\Fpdi\PdfReader;
+    use setasign\Fpdi\Fpdi as TfpdfFpdi;
 
-$tables = ['denimattire', 'formalattire', 'qanda', 'sportswear', 'swimsuitandtrunks'];
-$candidates = ['male' => [], 'female' => []];
+    $tables = ['denimattire', 'formalattire', 'qanda', 'sportswear', 'swimsuitandtrunks'];
+    $candidates = ['male' => [], 'female' => []];
 
-foreach ($tables as $table) {
-    $sql = "SELECT gender, candidate, SUM(score) as total_score
-            FROM $table
-            GROUP BY gender, candidate";
+    foreach ($tables as $table) {
+        $sql = "SELECT gender, candidate, SUM(score) as total_score
+                FROM $table
+                GROUP BY gender, candidate";
 
-    $result = $con->query($sql);
+        $result = $con->query($sql);
 
-    if ($result->num_rows > 0) {
-        while ($row = $result->fetch_assoc()) {
-            $gender = $row['gender'];
-            $candidate = $row['candidate'];
-            $score = $row['total_score'];
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $gender = $row['gender'];
+                $candidate = $row['candidate'];
+                $score = $row['total_score'];
 
-            if (!isset($candidates[$gender][$candidate])) {
-                $candidates[$gender][$candidate] = 0;
+                if (!isset($candidates[$gender][$candidate])) {
+                    $candidates[$gender][$candidate] = 0;
+                }
+
+                $candidates[$gender][$candidate] += $score;
             }
-
-            $candidates[$gender][$candidate] += $score;
         }
     }
-}
 
-$con->close();
+    $con->close();
 
-class PDF extends TfpdfFpdi {
-    function Header() {
-        $this->SetFont('Arial', 'B', 12);
-        $this->Cell(0, 10, 'Overall Summary', 0, 1, 'C');
-        $this->Ln(5);
-    }
-
-    function TableHeader($header) {
-        $this->SetFont('Arial', 'B', 10);
-        foreach ($header as $col) {
-            $this->Cell(60, 7, $col, 1);
+    class PDF extends TfpdfFpdi {
+        function Header() {
+            $this->SetFont('Arial', 'B', 12);
+            $this->Cell(0, 10, 'Overall Summary', 0, 1, 'C');
+            $this->Ln(5);
         }
-        $this->Ln();
-    }
 
-    function TableRow($row) {
-        $this->SetFont('Arial', '', 10);
-        foreach ($row as $col) {
-            $this->Cell(60, 6, $col, 1);
+        function TableHeader($header) {
+            $this->SetFont('Arial', 'B', 10);
+            foreach ($header as $col) {
+                $this->Cell(60, 7, $col, 1);
+            }
+            $this->Ln();
         }
-        $this->Ln();
+
+        function TableRow($row) {
+            $this->SetFont('Arial', '', 10);
+            foreach ($row as $col) {
+                $this->Cell(60, 6, $col, 1);
+            }
+            $this->Ln();
+        }
+
+        function AddTitle($title) {
+            $this->SetFont('Arial', 'B', 12);
+            $this->Cell(0, 10, $title, 0, 1, 'C');
+            $this->Ln(5);
+        }
     }
 
-    function AddTitle($title) {
-        $this->SetFont('Arial', 'B', 12);
-        $this->Cell(0, 10, $title, 0, 1, 'C');
-        $this->Ln(5);
+    $pdf = new PDF();
+    $pdf->AddPage();
+
+    // Male candidates
+    $pdf->AddTitle('Male Candidates');
+    $pdf->TableHeader(['Candidate', 'Total Score', 'Rank']);
+    $maleCandidates = $candidates['male'];
+    arsort($maleCandidates); 
+    $rank = 1;
+    foreach ($maleCandidates as $candidate => $totalScore) {
+        $pdf->TableRow([htmlspecialchars($candidate), number_format($totalScore, 2), $rank++]);
     }
-}
 
-$pdf = new PDF();
-$pdf->AddPage();
+    // Female candidates
+    $pdf->AddTitle('Female Candidates');
+    $pdf->TableHeader(['Candidate', 'Total Score', 'Rank']);
+    $femaleCandidates = $candidates['female'];
+    arsort($femaleCandidates); 
+    $rank = 1;
+    foreach ($femaleCandidates as $candidate => $totalScore) {
+        $pdf->TableRow([htmlspecialchars($candidate), number_format($totalScore, 2), $rank++]);
+    }
 
-// Male candidates
-$pdf->AddTitle('Male Candidates');
-$pdf->TableHeader(['Candidate', 'Total Score', 'Rank']);
-$maleCandidates = $candidates['male'];
-arsort($maleCandidates); // Sort by total score in descending order
-$rank = 1;
-foreach ($maleCandidates as $candidate => $totalScore) {
-    $pdf->TableRow([htmlspecialchars($candidate), number_format($totalScore, 2), $rank++]);
-}
+    $pdfPath = 'D:/xampp/htdocs/3rdyr/Tabulation/results/summary.pdf';
+    $pdf->Output('F', $pdfPath);
 
-// Female candidates
-$pdf->AddTitle('Female Candidates');
-$pdf->TableHeader(['Candidate', 'Total Score', 'Rank']);
-$femaleCandidates = $candidates['female'];
-arsort($femaleCandidates); // Sort by total score in descending order
-$rank = 1;
-foreach ($femaleCandidates as $candidate => $totalScore) {
-    $pdf->TableRow([htmlspecialchars($candidate), number_format($totalScore, 2), $rank++]);
-}
+    $response = [
+        'success' => true,
+        'message' => "PDF saved to: $pdfPath"
+    ];
 
-$pdfPath = 'D:/xampp/htdocs/3rdyr/Tabulation/results/summary.pdf';
-$pdf->Output('F', $pdfPath);
-
-$response = [
-    'success' => true,
-    'message' => "PDF saved to: $pdfPath"
-];
-
-echo json_encode($response);
+    echo json_encode($response);
 ?>
