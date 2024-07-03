@@ -1,4 +1,4 @@
-n<?php
+<?php
 include "../backend/myConnection.php";
 
 $tables = ['swimsuitandtrunks',];

@@ -229,7 +229,23 @@
     </footer>
     <!---End Footer-->
     <script>
-        
+         //For navbar
+         window.onscroll = function () { scrollFunction() };
+
+         function scrollFunction() {
+           if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
+             document.getElementById("navbar").classList.add("blurred");
+             const navLinks = document.querySelectorAll(".nav-link");
+             navLinks.forEach(link => link.classList.add("scrolled"));
+             document.getElementById("mugIcon").classList.add("scrolled"); 
+           } else {
+             document.getElementById("navbar").classList.remove("blurred");
+             const navLinks = document.querySelectorAll(".nav-link");
+             navLinks.forEach(link => link.classList.remove("scrolled"));
+             document.getElementById("mugIcon").classList.remove("scrolled");
+           }
+         }
+         //end of function for navbarrr
         function submitScores(gender) {
             // Get the judge ID from the HTML
             let judgeId = document.getElementById('judgeID').innerText;
