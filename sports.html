@@ -388,11 +388,11 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'success') {
-                        // Update male contestants table
+
                         let maleTable = document.getElementById('SportsMale');
                         let maleTbody = maleTable.querySelector('tbody');
                         if (maleTbody) {
-                            let maleNumber = 1; // Initialize male contestant number
+                            let maleNumber = 1;
                             data.maleContestants.forEach((contestant, index) => {
                                 let newRow = `
                                     <tr class="table-data">
@@ -401,7 +401,7 @@
                                         <td class="table-rank">0</td>
                                     </tr>`;
                                 maleTbody.insertAdjacentHTML('beforeend', newRow);
-                                maleNumber++; // Increment male contestant number
+                                maleNumber++; 
                             });
                         } else {
                             console.error('Male contestants tbody not found');
@@ -411,7 +411,7 @@
                         let femaleTable = document.getElementById('SportsFemale');
                         let femaleTbody = femaleTable.querySelector('tbody');
                         if (femaleTbody) {
-                            let femaleNumber = 1; // Initialize female contestant number
+                            let femaleNumber = 1; 
                             data.femaleContestants.forEach((contestant, index) => {
                                 let newRow = `
                                     <tr class="table-data">
@@ -420,7 +420,7 @@
                                         <td class="table-rank">0</td>
                                     </tr>`;
                                 femaleTbody.insertAdjacentHTML('beforeend', newRow);
-                                femaleNumber++; // Increment female contestant number
+                                femaleNumber++;
                             });
                         } else {
                             console.error('Female contestants tbody not found');
@@ -435,7 +435,6 @@
                 });
         }
 
-        // Call the function to fetch contestants on page load
         document.addEventListener('DOMContentLoaded', fetchContestants);
 
     </script>
