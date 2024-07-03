@@ -1,7 +1,7 @@
 <?php
-    require 'vendor/autoload.php'; 
+    require '../vendor/autoload.php'; 
 
-    include "myConnection.php";
+    include "../backend/myConnection.php";
 
     use setasign\Fpdi\Fpdi;
     use setasign\Fpdi\PdfReader;

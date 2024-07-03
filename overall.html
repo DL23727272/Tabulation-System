@@ -243,7 +243,7 @@
         
         function loadSummaryTable() {
             $.ajax({
-                url: 'overallSummary.php',
+                url: './backend/overallSummary.php',
                 method: 'GET',
                 success: function(data) {
                     $('#summary-table').html(data);
@@ -255,7 +255,7 @@
         }
         function loadDenimSummaryTable() {
             $.ajax({
-                url: 'denimSummary.php',
+                url: './backend/denimSummary.php',
                 method: 'GET',
                 success: function(data) {
                     $('#denimsummary-table').html(data);
@@ -267,7 +267,7 @@
         }
         function loadFormalSummaryTable() {
             $.ajax({
-                url: 'formalSummary.php',
+                url: './backend/formalSummary.php',
                 method: 'GET',
                 success: function(data) {
                     $('#formalsummary-table').html(data);
@@ -279,7 +279,7 @@
         }
         function loadSwimSummaryTable() {
             $.ajax({
-                url: 'swimsuitSummary.php',
+                url: './backend/swimsuitSummary.php',
                 method: 'GET',
                 success: function(data) {
                     $('#swimsuitsummary-table').html(data);
@@ -291,7 +291,7 @@
         }
         function loadSportsSummaryTable() {
             $.ajax({
-                url: 'sportsSummary.php',
+                url: './backend/sportsSummary.php',
                 method: 'GET',
                 success: function(data) {
                     $('#sportssummary-table').html(data);
@@ -303,7 +303,7 @@
         }
         function loadQuestionSummaryTable() {
             $.ajax({
-                url: 'questionSummary.php',
+                url: './backend/questionSummary.php',
                 method: 'GET',
                 success: function(data) {
                     $('#questionsummary-table').html(data);
@@ -336,7 +336,7 @@
 
         document.getElementById('exportPDF').addEventListener('click', function() {
           var xhr = new XMLHttpRequest();
-          xhr.open('GET', 'exportToPDF.php', true);
+          xhr.open('GET', './backend/exportToPDF.php', true);
           xhr.onreadystatechange = function() {
               if (xhr.readyState === 4) {
                   if (xhr.status === 200) {

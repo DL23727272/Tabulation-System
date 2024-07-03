@@ -1,7 +1,7 @@
-<?php
-include "myConnection.php";
+n<?php
+include "../backend/myConnection.php";
 
-$tables = ['denimattire', 'formalattire', 'qanda', 'sportswear', 'swimsuitandtrunks'];
+$tables = ['swimsuitandtrunks',];
 $candidates = ['male' => [], 'female' => []];
 
     foreach ($tables as $table) {
@@ -26,7 +26,7 @@ $candidates = ['male' => [], 'female' => []];
         }
     }
 
-    echo '<h2 class="fst-italic text-center text-white">Overall Summary</h2>';
+    echo '<h2 class="fst-italic text-center text-white">Overall Swimsuit & Trunks Summary</h2>';
 
     // Male candidates table
     echo '<h4 class="fst-italic text-center text-white">Male Candidates</h4>';

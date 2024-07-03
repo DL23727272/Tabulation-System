@@ -278,7 +278,7 @@
               // Send form data to loginProcess.php using AJAX
               $.ajax({
                   type: "POST",
-                  url: "loginProcess.php",
+                  url: "./backend/loginProcess.php",
                   data: {
                       customerLoginName: username,
                       customerLoginPassword: password
@@ -353,13 +353,14 @@
         } else {
             $.ajax({
                 type: "POST",
-                url: "signupProcess.php",
+                url: "./backend/signupProcess.php",
                 data: {
                     userSignUpName: userSignUpName,
                     userSignUpPassword: userSignUpPassword
                 },
                 dataType: "json",
                 success: function(response) {
+                  console.log("Signup Response: ", response);
                     if (response.status === 'success') {
                         //alertify.success(response.message);
                         Swal.fire({

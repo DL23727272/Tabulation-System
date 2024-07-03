@@ -148,7 +148,7 @@
 
     <hr class="container-sm Sborder border-success mt-5 border-2 opacity-50" />
 
-    <!-- Denim CONTENT -->
+   <!-- Denim CONTENT -->
     <section class="">
         <div class="container-sm">
             <div id="denim">
@@ -169,36 +169,12 @@
                                 <th class="table-rank-header">RANK</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr class="table-data">
-                                <td>M1</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
-                            <tr class="table-data">
-                                <td>M2</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
-                            <tr class="table-data">
-                                <td>M3</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
-                            <tr class="table-data">
-                                <td>M4</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
-                            <tr class="table-data">
-                                <td>M5</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
+                        <tbody id="maleContestants">
+                            <!-- Male contestants will be dynamically added here -->
                         </tbody>
                     </table>
                     <div class="col align-self-end">
-                       <button type="button" class="btn btn-primary" onclick="submitScores('male')">Submit</button>
+                        <button type="button" class="btn btn-primary" onclick="submitScores('male')">Submit</button>
                     </div>
                     
                 </div>
@@ -215,36 +191,12 @@
                                 <th class="table-rank-header">RANK</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr class="table-data">
-                                <td>F1</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
-                            <tr class="table-data">
-                                <td>F2</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
-                            <tr class="table-data">
-                                <td>F3</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
-                            <tr class="table-data">
-                                <td>F4</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
-                            <tr class="table-data">
-                                <td>F5</td>
-                                <td><input type="text" class="score-input" placeholder="0.00"></td>
-                                <td class="table-rank">0</td>
-                            </tr>
+                        <tbody id="femaleContestants">
+                            <!-- Female contestants will be dynamically added here -->
                         </tbody>
                     </table>
                     <div class="col align-self-end">
-                       <button type="button" class="btn btn-primary" onclick="submitScores('female')">Submit</button>
+                        <button type="button" class="btn btn-primary" onclick="submitScores('female')">Submit</button>
                     </div>
                     
                 </div>
@@ -252,6 +204,7 @@
             </div>
         </div>
     </section>
+
    
     <!-- End Denim CONTENT -->
     <!---Footer-->
@@ -276,6 +229,7 @@
     </footer>
     <!---End Footer-->
     <script>
+        
         function submitScores(gender) {
             // Get the judge ID from the HTML
             let judgeId = document.getElementById('judgeID').innerText;
@@ -310,7 +264,7 @@
                 row.children[1].children[0].disabled = true;
             });
             $.ajax({
-                url: 'denimProcess.php',
+                url: './backend/denimProcess.php',
                 type: 'POST',
                 data: {
                     gender: gender,
@@ -347,20 +301,19 @@
         
         $(document).ready(function() {
             function updateRanks(tableId) {
-                let table = $(tableId);
+                let table = $('#' + tableId);
                 let rows = table.find('tbody tr');
                 let scores = [];
-                
+        
                 rows.each(function() {
                     let score = parseFloat($(this).find('.score-input').val());
                     scores.push({ row: $(this), score: score });
                 });
-                
-                // Sort scores by descending order
+        
                 scores.sort((a, b) => b.score - a.score);
-                
+        
                 let rank = 1;
-                
+        
                 scores.forEach((item, index) => {
                     if (index > 0 && item.score === scores[index - 1].score) {
                         item.row.find('.table-rank').text(rank);
@@ -369,18 +322,19 @@
                     }
                 });
             }
-            
-            $('.score-input').on('input', function() {
+        
+            $(document).on('input', '.score-input', function() {
                 let tableId = $(this).closest('table').attr('id');
-                updateRanks('#' + tableId);
+                updateRanks(tableId);
             });
-            
-            $('.btn-primary').click(function() {
+        
+            $(document).on('click', '.btn-primary', function() {
                 let tableId = $(this).closest('table').attr('id');
-                updateRanks('#' + tableId);
-              //  alertify.success('Scores and ranks updated successfully.');
+                updateRanks(tableId);
             });
         });
+        
+        
         
         
 
@@ -402,6 +356,62 @@
                 console.log('Customer ID not found in sessionStorage'); 
             }
         });
+
+
+       // Function to fetch contestant data
+        function fetchContestants() {
+            fetch('./backend/fetchContestants.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        // Update male contestants table
+                        let maleTable = document.getElementById('DenimMale');
+                        let maleTbody = maleTable.querySelector('tbody');
+                        if (maleTbody) {
+                            data.maleContestants.forEach((contestant, index) => {
+                                let newRow = `
+                                    <tr class="table-data">
+                                        <td>M${contestant.id} - ${contestant.name}</td>
+                                        <td><input type="text" class="score-input" placeholder="0.00"></td>
+                                        <td class="table-rank">0</td>
+                                    </tr>`;
+                                maleTbody.insertAdjacentHTML('beforeend', newRow);
+                            });
+                        } else {
+                            console.error('Male contestants tbody not found');
+                        }
+
+                        // Update female contestants table
+                        let femaleTable = document.getElementById('DenimFemale');
+                        let femaleTbody = femaleTable.querySelector('tbody');
+                        if (femaleTbody) {
+                            data.femaleContestants.forEach((contestant, index) => {
+                                let newRow = `
+                                    <tr class="table-data">
+                                        <td>F${contestant.id} - ${contestant.name}</td>
+                                        <td><input type="text" class="score-input" placeholder="0.00"></td>
+                                        <td class="table-rank">0</td>
+                                    </tr>`;
+                                femaleTbody.insertAdjacentHTML('beforeend', newRow);
+                            });
+                        } else {
+                            console.error('Female contestants tbody not found');
+                        }
+                    } else {
+                        console.error('Failed to fetch contestant data');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching contestant data:', error);
+                    alert('Failed to fetch contestant data. Please try again later.');
+                });
+        }
+
+        // Call the function to fetch contestants on page load
+        document.addEventListener('DOMContentLoaded', fetchContestants);
+
+
+
     </script>
 </body>
 </html>

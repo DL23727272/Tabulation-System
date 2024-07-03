@@ -1,5 +1,5 @@
 n<?php
-include "myConnection.php";
+include "../backend/myConnection.php";
 
 $tables = ['sportswear',];
 $candidates = ['male' => [], 'female' => []];

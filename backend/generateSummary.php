@@ -1,5 +1,5 @@
 <?php
-include "myConnection.php";
+include "../backend/myConnection.php";
 
 $tables = ['denimattire', 'formalattire', 'qanda', 'sportswear', 'swimsuitandtrunks'];
 $judges = [];

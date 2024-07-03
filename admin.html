@@ -342,7 +342,7 @@
 
         function loadSummaryTable() {
             $.ajax({
-                url: 'generateSummary.php',
+                url: './backend/generateSummary.php',
                 method: 'GET',
                 success: function(data) {
                     $('#summary-table').html(data);

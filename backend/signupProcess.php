@@ -1,5 +1,5 @@
 <?php
-include "myConnection.php";
+include "../backend/myConnection.php";
 
 if (isset($_POST['userSignUpName']) && isset($_POST['userSignUpPassword'])) {
     $username = $_POST["userSignUpName"];
