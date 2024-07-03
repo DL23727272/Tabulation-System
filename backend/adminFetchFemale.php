@@ -20,7 +20,7 @@ function fetchFemaleContestants($con) {
                 <div class="col mt-5">
                     <div class="card h-100">
                         <div class="container mt-5 text-center">
-                            <img src="contestants/'. $row['image'] .'" class="card-img-top" alt="Contestant Image" style="width: 200px; height: 300px;">
+                            <img src="contestants/'. $row['image'] .'" class="card-img-top" alt="Contestant Image" style="width: 200px; height: 250px;">
                         </div>
                         <div class="card-body">
                             <h5 class="card-title">'. $row['name'] .'</h5>
@@ -38,38 +38,60 @@ function fetchFemaleContestants($con) {
                 <!-- Edit Modal -->
                 <div class="modal fade" id="editModal'. $contestantID .'" tabindex="-1" aria-labelledby="editModalLabel'. $contestantID .'" aria-hidden="true">
                     <div class="modal-dialog">
-                        <div class="modal-content">
+                        <div class="modal-content"  style="background: rgba(255, 255, 255, 0.449); backdrop-filter: blur(10px);">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="editModalLabel'. $contestantID .'">Edit Contestant</h5>
+                                <img src="img/logo.png" alt="" style="width: 50px;">
+                                <h5 class="modal-title" id="editModalLabel'. $contestantID .'">Edit Female Contestant</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form id="editForm'. $contestantID .'" method="POST" enctype="multipart/form-data">
                                     <input type="hidden" name="contestantID" value="'. $contestantID .'">
-                                    <div class="mb-3">
-                                        <label for="contestantName'. $contestantID .'" class="form-label">Name:</label>
-                                        <input type="text" class="form-control" id="contestantName'. $contestantID .'" name="contestantName" value="'. $row['name'] .'" required>
+                                    
+                                    <div class="form-group row my-4">
+                                        <label for="contestantName'. $contestantID .'" class="col-sm-3 col-form-label">Name:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="contestantName'. $contestantID .'" name="contestantName" value="'. $row['name'] .'" required>
+                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="contestantAge'. $contestantID .'" class="form-label">Age:</label>
-                                        <input type="number" class="form-control" id="contestantAge'. $contestantID .'" name="contestantAge" value="'. $row['age'] .'" required>
+
+                                    <div class="form-group row mb-3">
+                                        <label for="contestantAge'. $contestantID .'" class="col-sm-3 col-form-label">Age:</label>
+                                        <div class="col-sm-9">
+                                            <input type="number" class="form-control" id="contestantAge'. $contestantID .'" name="contestantAge" value="'. $row['age'] .'" required>
+                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="contestantAddress'. $contestantID .'" class="form-label">Address:</label>
-                                        <input type="text" class="form-control" id="contestantAddress'. $contestantID .'" name="contestantAddress" value="'. $row['address'] .'" required>
+
+                                    <div class="form-group row mb-3">
+                                        <label for="contestantAddress'. $contestantID .'" class="col-sm-3 col-form-label">Address:</label>
+                                        <div class="col-sm-9">
+                                            <input type="text" class="form-control" id="contestantAddress'. $contestantID .'" name="contestantAddress" value="'. $row['address'] .'" required>
+                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="contestantGender'. $contestantID .'" class="form-label">Gender:</label>
-                                        <select class="form-select" id="contestantGender'. $contestantID .'" name="contestantGender" required>
-                                            <option value="Female" selected>Female</option>
-                                            <option value="Male">Male</option>
-                                        </select>
+
+                                    <div class="form-group row mb-3">
+                                        <label for="contestantGender'. $contestantID .'" class="col-sm-3 col-form-label">Gender:</label>
+                                        <div class="col-sm-9">
+                                            <select class="form-select" id="contestantGender'. $contestantID .'" name="contestantGender" required>
+                                                <option value="#" disabled selected>--- Select Gender</option>
+                                                <option value="Female" '. ($row['gender'] == 'Female' ? 'selected' : '') .'>Female</option>
+                                                <option value="Male" '. ($row['gender'] == 'Male' ? 'selected' : '') .'>Male</option>
+                                            </select>
+                                        </div>
                                     </div>
-                                    <div class="mb-3">
-                                        <label for="contestantImage'. $contestantID .'" class="form-label">Contestant Image:</label>
-                                        <input type="file" class="form-control" id="contestantImage'. $contestantID .'" name="contestantImage">
+
+                                    <div class="form-group row mb-3">
+                                        <label for="contestantImage'. $contestantID .'" class="col-sm-3 col-form-label">Image:</label>
+                                        <div class="col-sm-9">
+                                            <input type="file" class="form-control" id="contestantImage'. $contestantID .'" name="contestantImage">
+                                        </div>
                                     </div>
-                                    <button type="button" class="btn btn-primary mt-3" onclick="updateContestant('. $contestantID .')">Update</button>
+                                    
+                                    <div class="form-group row">
+                                        <div class="col-sm-9 offset-sm-6">
+                                            <button type="button" class="btn btn-outline-light mt-3" onclick="updateContestant('. $contestantID .')">Update</button>
+                                        </div>
+                                    </div>
                                 </form>
                             </div>
                         </div>
