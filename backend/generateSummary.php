@@ -1,14 +1,12 @@
 <?php
 include "../backend/myConnection.php";
 
-$tables = ['denimattire', 'formalattire', 'qanda', 'sportswear', 'swimsuitandtrunks'];
+$tables = ['denimattire',  'sportswear', 'swimsuitandtrunks','formalattire', 'qanda'];
 $judges = [];
 
 foreach ($tables as $table) {
-    $sql = "SELECT JudgeId, gender, candidate, SUM(score) as total_score
-            FROM $table
-            GROUP BY JudgeId, gender, candidate";
-
+    $sql = "SELECT JudgeId, gender, candidate, score
+            FROM $table";
     $result = $con->query($sql);
 
     if ($result->num_rows > 0) {
@@ -16,77 +14,69 @@ foreach ($tables as $table) {
             $judgeId = $row['JudgeId'];
             $gender = $row['gender'];
             $candidate = $row['candidate'];
-            $score = $row['total_score'];
+            $score = floatval($row['score']); // Convert score to float if necessary
 
             if (!isset($judges[$judgeId])) {
                 $judges[$judgeId] = ['male' => [], 'female' => []];
             }
 
             if (!isset($judges[$judgeId][$gender][$candidate])) {
-                $judges[$judgeId][$gender][$candidate] = 0;
+                $judges[$judgeId][$gender][$candidate] = [
+                    'total_score' => 0, // Initialize total score
+                    'scores' => []     // Array to hold individual scores
+                ];
             }
 
-            $judges[$judgeId][$gender][$candidate] += $score;
+            // Sum up the scores for each candidate
+            $judges[$judgeId][$gender][$candidate]['scores'][$table] = $score;
+            $judges[$judgeId][$gender][$candidate]['total_score'] += $score;
         }
     }
 }
 
-foreach ($judges as $judgeId => $genders) {
-    echo '<h2 class="fst-italic text-center text-white">Judge No: ' . htmlspecialchars($judgeId) . '</h2>';
-    echo ' <h2 class="fst-bold text-center text-white">Overall Score(100 Points)</h2>';
-    // Male candidates table
-    echo '<h4 class="fst-bold text-center text-white">Male Candidates</h4>';
+function displayScores($candidates, $gender, $judgeId, $tables) {
+    echo '<h4 class="fst-bold text-center text-white mt-5">' . ucfirst($gender) . ' Candidates</h4>';
+    echo '<form method="POST" action="updateScores.php">';
+    echo '<input type="hidden" name="judgeId" value="' . htmlspecialchars($judgeId) . '">';
+    echo '<input type="hidden" name="gender" value="' . htmlspecialchars($gender) . '">';
     echo '<table class="table table-bordered">';
     echo '<thead>
             <tr>
-                <th>Candidate</th>
-                <th>Gender</th>
-                <th>Total Score</th>
-                <th>Rank</th>
+                <th class="bg-primary">Candidate</th>
+                <th class="bg-primary">Gender</th>
+                <th class="bg-primary">Denim Attire</th>
+                <th class="bg-primary">Sportswear</th>
+                <th class="bg-primary">Swimsuit/Trunks</th>
+                <th class="bg-primary">Formal Attire</th>
+                <th class="bg-primary">Q&A</th>
+                <th class="bg-primary">Total Score</th>
             </tr>
           </thead>';
     echo '<tbody>';
-    
-    $maleCandidates = $genders['male'];
-    arsort($maleCandidates);  
-    $rank = 1;
-    foreach ($maleCandidates as $candidate => $totalScore) {
-        echo '<tr>';
-        echo '<td>' . htmlspecialchars($candidate) . '</td>';
-        echo '<td>Male</td>';
-        echo '<td>' . htmlspecialchars(number_format($totalScore, 2)) . '</td>';
-        echo '<td>' . $rank++ . '</td>';
-        echo '</tr>';
-    }
-    echo '</tbody>';
-    echo '</table>';
 
-    // Female candidates table
-    echo '<h4 class="fst-bold text-center text-white">Female Candidates</h4>';
-    echo '<table class="table table-bordered">';
-    echo '<thead>
-            <tr>
-                <th>Candidate</th>
-                <th>Gender</th>
-                <th>Total Score</th>
-                <th>Rank</th>
-            </tr>
-          </thead>';
-    echo '<tbody>';
-    
-    $femaleCandidates = $genders['female'];
-    arsort($femaleCandidates);  
-    $rank = 1;
-    foreach ($femaleCandidates as $candidate => $totalScore) {
+    foreach ($candidates as $candidate => $data) {
         echo '<tr>';
         echo '<td>' . htmlspecialchars($candidate) . '</td>';
-        echo '<td>Female</td>';
-        echo '<td>' . htmlspecialchars(number_format($totalScore, 2)) . '</td>';
-        echo '<td>' . $rank++ . '</td>';
+        echo '<td>' . ucfirst($gender) . '</td>';
+        foreach ($tables as $table) {
+            echo '<td><input type="text" style="width: 60px" name="scores[' . htmlspecialchars($candidate) . '][' . $table . ']" value="' . htmlspecialchars($data['scores'][$table] ?? 0) . '"></td>';
+        }
+        echo '<td class="text-bg-warning fw-bold">' . htmlspecialchars($data['total_score']) . '</td>';
         echo '</tr>';
     }
     echo '</tbody>';
     echo '</table>';
+    echo '<button type="submit" class="btn btn-primary .save-btn" >Save Changes</button>'; 
+    echo '</form>';
+}
+
+foreach ($judges as $judgeId => $genders) {
+    echo '<h2 class="fst-italic text-center text-white mt-5">Judge No: ' . htmlspecialchars($judgeId) . '</h2>';
+    echo '<h2 class="fst-bold text-center text-white">Overall Score (100 Points)</h2>';
+
+    displayScores($genders['male'], 'male', $judgeId, $tables);
+
+    displayScores($genders['female'], 'female', $judgeId, $tables);
 }
 
 $con->close();

@@ -1,6 +1,8 @@
 <?php
 include "../backend/myConnection.php";
 
+//Fetch table for the judge
+
 // Function to fetch contestants by gender
 function fetchContestants($gender) {
     global $con;

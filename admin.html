@@ -96,6 +96,7 @@
         background-color: rgba(255, 255, 255, 0.385); 
         backdrop-filter: blur(10px); 
       }
+    
     </style>
   </head>
   <body class="">
@@ -227,49 +228,89 @@
      <!---End Footer-->
      
      
-      <script type="text/javascript">
-        //For navbar
-        window.onscroll = function () { scrollFunction() };
+     <script type="text/javascript">
+      // For navbar
+      window.onscroll = function () { scrollFunction() };
 
-        function scrollFunction() {
+      function scrollFunction() {
           if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-            document.getElementById("navbar").classList.add("blurred");
-            const navLinks = document.querySelectorAll(".nav-link");
-            navLinks.forEach(link => link.classList.add("scrolled"));
-            document.getElementById("mugIcon").classList.add("scrolled"); 
+              document.getElementById("navbar").classList.add("blurred");
+              const navLinks = document.querySelectorAll(".nav-link");
+              navLinks.forEach(link => link.classList.add("scrolled"));
+              document.getElementById("mugIcon").classList.add("scrolled");
           } else {
-            document.getElementById("navbar").classList.remove("blurred");
-            const navLinks = document.querySelectorAll(".nav-link");
-            navLinks.forEach(link => link.classList.remove("scrolled"));
-            document.getElementById("mugIcon").classList.remove("scrolled");
+              document.getElementById("navbar").classList.remove("blurred");
+              const navLinks = document.querySelectorAll(".nav-link");
+              navLinks.forEach(link => link.classList.remove("scrolled"));
+              document.getElementById("mugIcon").classList.remove("scrolled");
           }
-        }
-        //end of function for navbarrr
+      }
+      // End of function for navbar
 
-        function loadSummaryTable() {
-            $.ajax({
-                url: './backend/generateSummary.php',
-                method: 'GET',
-                success: function(data) {
-                    $('#summary-table').html(data);
+      function loadSummaryTable() {
+          $.ajax({
+              url: './backend/generateSummary.php',
+              method: 'GET',
+              success: function(data) {
+                  $('#summary-table').html(data);
+              },
+              error: function() {
+                  alertify.error('Error loading summary table.');
+              }
+          });
+      }
+
+      $(document).ready(function() {
+          loadSummaryTable();
+
+          $('#refresh-summary').click(function() {
+              loadSummaryTable();
+          });
+         
+          // Handle form submission
+          $(document).on('submit', 'form', function(e) {
+              e.preventDefault();
+              var formData = $(this).serialize();
+              $.ajax({
+                url: './backend/updateScores.php',
+                method: 'POST',
+                data: formData,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.status == 'success') {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(function() {
+                            location.reload(); 
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
                 },
                 error: function() {
-                    alertify.error('Error loading summary table.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Failed to update scores.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 }
             });
-        }
-
-        $(document).ready(function() {
-            loadSummaryTable();
-
-            $('#refresh-summary').click(function() {
-                loadSummaryTable();
-            });
-        });
-       
-
-
-
-      </script>
+            
+          });
+      });
+      
+  </script>
   </body>
 </html>
