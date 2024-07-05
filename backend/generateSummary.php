@@ -43,7 +43,6 @@ function displayScores($candidates, $gender, $judgeId, $tables) {
     echo '<thead>
             <tr>
                 <th class="bg-primary">Candidate</th>
-                <th class="bg-primary">Gender</th>
                 <th class="bg-primary">Denim Attire</th>
                 <th class="bg-primary">Sportswear</th>
                 <th class="bg-primary">Swimsuit/Trunks</th>
@@ -57,7 +56,6 @@ function displayScores($candidates, $gender, $judgeId, $tables) {
     foreach ($candidates as $candidate => $data) {
         echo '<tr>';
         echo '<td>' . htmlspecialchars($candidate) . '</td>';
-        echo '<td>' . ucfirst($gender) . '</td>';
         foreach ($tables as $table) {
             echo '<td><input type="text" style="width: 60px" name="scores[' . htmlspecialchars($candidate) . '][' . $table . ']" value="' . htmlspecialchars($data['scores'][$table] ?? 0) . '"></td>';
         }
