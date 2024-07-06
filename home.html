@@ -203,7 +203,33 @@
       <!-- End Hero-->
       <hr class="container-sm Sborder border-success mt-5 border-2 opacity-50" />
 
-   
+      <!-- Contestants CONTENT -->
+          
+      <section class="container-sm">
+        <div class="d-flex flex-column align-items-center text-center">
+          <h1 class="fst-italic text-center text-white">Our Contestants </h1>
+            <section class="container-sm">
+                <h1 class="fst-italic text-center text-white">Male </h1>
+                <div id="maleContestants" class="container mt-5 text-center">
+                </div>
+            </section>
+        
+
+            <hr class="container-sm Sborder border-success mt-5 border-2 opacity-50" />
+
+            <section class="container-sm">
+                <h1 class="fst-italic text-center text-white">Female </h1>
+                <div id="femaleContestants" class="container mt-5 text-center">
+                </div>
+            </section>
+        </div>
+    </section>
+  <!-- END OF Contestants CONTENT -->
+
+    <hr class="container-sm Sborder border-success mt-5 border-2 opacity-50" />
+
+
+    
     <!---Footer-->
     <footer class="mt-5 text-white p-3" style="background-color: #000000;">
         <div class="container-sm d-flex justify-content-between align-items-center">
@@ -290,6 +316,78 @@
                 console.log('Customer ID not found in sessionStorage'); 
             }
         });
+
+
+
+         
+    $(document).ready(function() {
+      function fetchContestants() {
+          $.ajax({
+              url: './backend/fetchAllContestant.php', 
+              type: 'GET',
+              dataType: 'json',
+              success: function(contestants) {
+                  let maleContestants = '';
+                  let femaleContestants = '';
+                  let maleCount = 0;
+                  let femaleCount = 0;
+
+                  contestants.forEach(contestant => {
+                      let contestantHtml = `
+                          <div class="col mt-5">
+                              <div class="card h-100">
+                                  <div class="container mt-5 text-center">
+                                      <img src="uploads/${contestant.image}" class="card-img-top" alt="Contestant Image" style="width: 200px; height: 250px;">
+                                  </div>
+                                  <div class="card-body">
+                                      <h5 class="card-title">${contestant.name}</h5>
+                                      <p class="card-text">Age: ${contestant.age}</p>
+                                      <p class="card-text">${contestant.address}</p>
+                                      <p class="card-text">Gender: ${contestant.gender}</p>
+                                  </div>
+                              </div>
+                          </div>
+                      `;
+
+                      if (contestant.gender.toLowerCase() === 'male') {
+                          if (maleCount % 3 === 0) {
+                              maleContestants += '<div class="row row-cols-1 row-cols-md-3 g-4">';
+                          }
+                          maleContestants += contestantHtml;
+                          if (maleCount % 3 === 2) {
+                              maleContestants += '</div>';
+                          }
+                          maleCount++;
+                      } else {
+                          if (femaleCount % 3 === 0) {
+                              femaleContestants += '<div class="row row-cols-1 row-cols-md-3 g-4">';
+                          }
+                          femaleContestants += contestantHtml;
+                          if (femaleCount % 3 === 2) {
+                              femaleContestants += '</div>';
+                          }
+                          femaleCount++;
+                      }
+                  });
+
+                  if (maleCount % 3 !== 0) {
+                      maleContestants += '</div>';
+                  }
+                  if (femaleCount % 3 !== 0) {
+                      femaleContestants += '</div>';
+                  }
+
+                  $('#maleContestants').html(maleContestants);
+                  $('#femaleContestants').html(femaleContestants);
+              },
+              error: function(xhr, status, error) {
+                  console.error('Ajax Error: ' + status + ' - ' + error); 
+              }
+          });
+      }
+
+      fetchContestants();
+  });
       </script>
   </body>
 </html>

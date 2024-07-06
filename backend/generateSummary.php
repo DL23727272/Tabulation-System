@@ -48,7 +48,7 @@ function displayScores($candidates, $gender, $judgeId, $tables) {
                 <th class="bg-primary">Swimsuit/Trunks</th>
                 <th class="bg-primary">Formal Attire</th>
                 <th class="bg-primary">Q&A</th>
-                <th class="bg-primary">Total Score</th>
+                <th class="bg-primary">Overall Score</th>
             </tr>
           </thead>';
     echo '<tbody>';
@@ -64,7 +64,7 @@ function displayScores($candidates, $gender, $judgeId, $tables) {
     }
     echo '</tbody>';
     echo '</table>';
-    echo '<button type="submit" class="btn btn-primary .save-btn" >Save Changes</button>'; 
+    echo '<button type="submit" class="btn btn-primary" >Save Changes</button>'; 
     echo '</form>';
 }
 
