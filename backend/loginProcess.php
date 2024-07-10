@@ -22,7 +22,7 @@ include "../backend/myConnection.php";
                 $row = mysqli_fetch_assoc($result);
                 // Verify hashed password
                 if ($hashedPassword === $row['password']) {
-                    $customerID = $row['id'];
+                    $judgeID = $row['id'];
                     $customerName = $row['username'];
                     $userType = $row['type'];
                     // Passwords match, login successful
@@ -31,7 +31,7 @@ include "../backend/myConnection.php";
                         'message' => 'Welcome!',
 
                         //retrieve the information para sa cart, admin, ordering
-                        'id' => $customerID,
+                        'id' => $judgeID,
                         'username' => $customerName,
                         'type' => $userType
 

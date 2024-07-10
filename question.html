@@ -157,12 +157,12 @@
     <!-- Question and Answer CONTENT -->
     <section class="">
         <div class="container-sm">
-            <div id="question">
+            <div id="denim">
                 <h1 class="fst-italic text-center text-white">Judge No. <span id="judgeID">0</span></h1>
                 <h1 class="fst-italic text-center text-white"> <span id="judgeName"></span></h1>
-                <h1 class="fst-italic text-center text-white">Question and Answer</h1>
+                <h1 class="fst-italic text-center text-white">Question & Answer</h1>
                 <h2 class="fst-bold text-center text-white">(60 Points)</h2>
-
+    
                 <div class="container mt-5">
                     <table id="QuestionMale" class="table table-bordered">
                         <thead>
@@ -176,14 +176,11 @@
                             </tr>
                         </thead>
                         <tbody id="maleContestants">
+                            <!-- Male contestants will be dynamically added here -->
                         </tbody>
                     </table>
-                    <div class="col align-self-end">
-                       <button type="button" class="btn btn-primary" onclick="submitScores('male')">Submit</button>
-                    </div>
-                    
                 </div>
-
+    
                 <div class="container mt-5">
                     <table id="QuestionFemale" class="table table-bordered">
                         <thead>
@@ -197,20 +194,20 @@
                             </tr>
                         </thead>
                         <tbody id="femaleContestants">
-                      
+                            <!-- Female contestants will be dynamically added here -->
                         </tbody>
                     </table>
-                    <div class="col align-self-end">
-                       <button type="button" class="btn btn-primary" onclick="submitScores('female')">Submit</button>
-                    </div>
-                    
                 </div>
-
+    
+                <div class="col align-self-center text-center mt-5">
+                    <button type="button" class="btn btn-primary" onclick="submitScores()">Submit Scores</button>
+                </div>
+    
             </div>
         </div>
     </section>
    
-    <!-- End Sportswear CONTENT -->
+    <!-- End Question CONTENT -->
 
     <hr class="container-sm Sborder border-success mt-5 border-2 opacity-50" />
 
@@ -255,54 +252,82 @@
     }
     //end of function for navbarrr
 
-        function submitScores(gender) {
+        //Function for SUbmitting score
+        function submitScores() {
+            // Get the judge ID from the HTML
             let judgeId = document.getElementById('judgeID').innerText;
         
-            let data = [];
-            let rows = document.querySelectorAll(`#Question${gender.charAt(0).toUpperCase() + gender.slice(1)} .table-data`);
-            
-            let isEmpty = false;
-            
-            rows.forEach(row => {
-                let candidate = row.children[0].innerText;
-                let score = row.children[1].children[0].value.trim(); 
+            // Arrays to store data for both genders
+            let maleData = [];
+            let femaleData = [];
+        
+            // Fetch data from Male table
+            let maleRows = document.querySelectorAll(`#QuestionMale .table-data`);
+            maleRows.forEach(row => {
+                let candidate = row.children[0].innerText.split(' - ')[1]; 
+                let score = row.children[1].children[0].value.trim();
                 let rank = row.children[2].innerText;
-                
-                if (score === '') {
-                    isEmpty = true;
-                    return false; 
+                if (score !== '') {
+                    maleData.push({ gender: 'male', candidate: candidate, score: score, rank: rank });
                 }
-                
-                data.push({candidate: candidate, score: score, rank: rank});
             });
-            
-            if (isEmpty) {
+        
+            // Fetch data from Female table
+            let femaleRows = document.querySelectorAll(`#QuestionFemale .table-data`);
+            femaleRows.forEach(row => {
+                let candidate = row.children[0].innerText.split(' - ')[1]; 
+                let score = row.children[1].children[0].value.trim();
+                let rank = row.children[2].innerText;
+                if (score !== '') {
+                    femaleData.push({ gender: 'female', candidate: candidate, score: score, rank: rank });
+                }
+            });
+        
+            // Combine male and female data into combinedData
+            let combinedData = [...maleData, ...femaleData];
+            console.log(combinedData); //debug
+        
+            // Check if judge ID is present
+            if (!judgeId || judgeId === '0') {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Empty Fields',
-                    text: 'Please fill in all the score fields before submitting.'
+                    title: 'Judge ID Missing',
+                    text: 'Please log in as a judge to submit scores.'
                 });
                 return;
             }
-            rows.forEach(row => {
+        
+            // Check if there is any data to submit
+            if (combinedData.length === 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Empty Scores',
+                    text: 'Please fill in scores before submitting.'
+                });
+                return;
+            }
+        
+            // Disable score input fields after submission
+            [...maleRows, ...femaleRows].forEach(row => {
                 row.children[1].children[0].disabled = true;
             });
+        
+            // AJAX request to submit scores
             $.ajax({
                 url: './backend/questionProcess.php',
                 type: 'POST',
                 data: {
-                    gender: gender,
-                    judgeId: judgeId, 
-                    data: JSON.stringify(data)
+                    judgeId: judgeId,
+                    data: JSON.stringify(combinedData)
                 },
                 dataType: 'json',
-                success: function(response) {
+                success: function (response) {
                     if (response.status === 'success') {
                         Swal.fire({
                             icon: 'success',
                             title: response.message,
                             showConfirmButton: false,
-                            timer: 2000 
+                            timer: 2000
                         });
                     } else {
                         Swal.fire({
@@ -312,7 +337,7 @@
                         });
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -321,68 +346,27 @@
                 }
             });
         }
-        
-        
-        $(document).ready(function() {
-            function updateRanks(tableId) {
-                let table = $(tableId);
-                let rows = table.find('tbody tr');
-                let scores = [];
-                
-                rows.each(function() {
-                    let score = parseFloat($(this).find('.score-input').val());
-                    scores.push({ row: $(this), score: score });
-                });
-                
-                // Sort scores by descending order
-                scores.sort((a, b) => b.score - a.score);
-                
-                let rank = 1;
-                
-                scores.forEach((item, index) => {
-                    if (index > 0 && item.score === scores[index - 1].score) {
-                        item.row.find('.table-rank').text(rank);
-                    } else {
-                        item.row.find('.table-rank').text(rank++);
-                    }
-                });
-            }
-            
-            $('.score-input').on('input', function() {
-                let tableId = $(this).closest('table').attr('id');
-                updateRanks('#' + tableId);
-            });
-            
-            $('.btn-primary').click(function() {
-                let tableId = $(this).closest('table').attr('id');
-                updateRanks('#' + tableId);
-              //  alertify.success('Scores and ranks updated successfully.');
-            });
-        });
-        
-        
 
         document.addEventListener("DOMContentLoaded", function() {
-            var customerID = sessionStorage.getItem('customerID');
+            var customerID = sessionStorage.getItem('judgeID');
             var customerName = sessionStorage.getItem('customerName');
             var cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
             document.getElementById("judgeID").innerHTML = customerID;
             document.getElementById("judgeName").innerHTML = customerName;
             // Check if customerID is present
             if (customerID) {
-              document.getElementById('customerID').innerText = 'Customer Name: ' + customerName;
-              console.log('Customer ID ' + customerID)
-              console.log('Customer Name ' + customerName);
-              console.log(cartItems)
-              document.getElementById("judgeID").innerHTML = customerID;
-               
+            document.getElementById('customerID').innerText = 'Customer Name: ' + customerName;
+            console.log('Judge ID ' + customerID)
+            console.log('Judge Name ' + customerName);
+            console.log(cartItems)
+            document.getElementById("judgeID").innerHTML = customerID;
+            
             } else {
                 console.log('Customer ID not found in sessionStorage'); 
             }
         });
 
-
-
+        
         //Ranking
         $(document).ready(function() {
             function updateRanks(tableId) {
@@ -434,7 +418,7 @@
                                 let newRow = `
                                     <tr class="table-data">
                                         <td>M${maleNumber} - ${contestant.name}</td>
-                                        <td><input type="text" class="score-input" placeholder="0.00"></td>
+                                        <td><input type="number" class="score-input" placeholder="0.00"></td>
                                         <td class="table-rank">0</td>
                                     </tr>`;
                                 maleTbody.insertAdjacentHTML('beforeend', newRow);
@@ -452,7 +436,7 @@
                                 let newRow = `
                                     <tr class="table-data">
                                         <td>F${femaleNumber} - ${contestant.name}</td>
-                                        <td><input type="text" class="score-input" placeholder="0.00"></td>
+                                        <td><input type="number" class="score-input" placeholder="0.00"></td>
                                         <td class="table-rank">0</td>
                                     </tr>`;
                                 femaleTbody.insertAdjacentHTML('beforeend', newRow);

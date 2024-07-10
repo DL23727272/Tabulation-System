@@ -7,48 +7,54 @@ $response = [
 ];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST['gender']) && isset($_POST['data']) && isset($_POST['judgeId'])) {
-        $gender = $con->real_escape_string($_POST['gender']);
+    
+    // Check for required fields
+    if (isset($_POST['data']) && isset($_POST['judgeId'])) {
         $data = json_decode($_POST['data'], true);
-        $judgeId = $con->real_escape_string($_POST['judgeId']); // Retrieve judgeId from POST data
+        $judgeId = $con->real_escape_string($_POST['judgeId']); 
 
-        // Check if judge has already voted for sportswear
-        $checkSql = "SELECT * FROM sportswear WHERE gender = '$gender' AND JudgeId = '$judgeId'";
-        $result = $con->query($checkSql);
+        // Check if data is an array
+        if (is_array($data)) {
+            $errors = [];
+            foreach ($data as $item) {
+                $gender = $con->real_escape_string($item['gender']);
+                $candidate = $con->real_escape_string($item['candidate']);
+                $score = $con->real_escape_string($item['score']);
+                $rank = $con->real_escape_string($item['rank']);
 
-        if ($result && $result->num_rows > 0) {
-            // Judge has already voted for this category
-            $response['status'] = 'error';
-            $response['message'] = 'You have already submitted your scores for this category.';
-        } else {
-            // Judge has not voted yet, proceed to insert scores
-            if (is_array($data)) {
-                $errors = [];
-                foreach ($data as $item) {
-                    $candidate = $con->real_escape_string($item['candidate']);
-                    $score = $con->real_escape_string($item['score']);
-                    $rank = $con->real_escape_string($item['rank']);
+                // Check if judge has already voted for this gender and candidate
+                $checkSql = "SELECT * FROM sportswear WHERE gender = '$gender' AND JudgeId = '$judgeId' AND candidate = '$candidate'";
+                $result = $con->query($checkSql);
 
-                    $sql = "INSERT INTO sportswear (gender, candidate, score, rank, JudgeId) VALUES ('$gender', '$candidate', '$score', '$rank', '$judgeId')"; // Include judgeId in the SQL query
+                if ($result && $result->num_rows > 0) {
+                    // Judge has already voted for this candidate
+                    $errors[] = "You have already submitted your scores for $gender category.";
+                } else {
+                    // Judge has not voted yet, proceed to insert scores
+                    $sql = "INSERT INTO sportswear (gender, candidate, score, rank, JudgeId) 
+                            VALUES ('$gender', '$candidate', '$score', '$rank', '$judgeId')";
 
                     if ($con->query($sql) !== TRUE) {
                         $errors[] = "Error: " . $con->error;
                     }
                 }
-                if (empty($errors)) {
-                    $response['status'] = 'success';
-                    $response['message'] = 'Thank you for your response!';
-                } else {
-                    $response['status'] = 'error';
-                    $response['message'] = implode(', ', $errors);
-                }
-            } else {
-                $response['message'] = 'Invalid data format.';
             }
+
+            if (empty($errors)) {
+                $response['status'] = 'success';
+                $response['message'] = 'Thank you for your response!';
+            } else {
+                $response['status'] = 'error';
+                $response['message'] = implode(', ', $errors);
+            }
+        } else {
+            $response['message'] = 'Invalid data format.';
         }
     } else {
         $response['message'] = 'Required fields are missing.';
     }
+} else {
+    $response['message'] = 'Invalid request method.';
 }
 
 $con->close();
