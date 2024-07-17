@@ -7,11 +7,10 @@ $response = [
 ];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
     // Check for required fields
     if (isset($_POST['data']) && isset($_POST['judgeId'])) {
         $data = json_decode($_POST['data'], true);
-        $judgeId = $con->real_escape_string($_POST['judgeId']); 
+        $judgeId = $con->real_escape_string($_POST['judgeId']);
 
         // Check if data is an array
         if (is_array($data)) {
@@ -31,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $errors[] = "You have already submitted your scores for $gender category.";
                 } else {
                     // Judge has not voted yet, proceed to insert scores
-                    $sql = "INSERT INTO denimattire (gender, candidate, score, rank, JudgeId) 
+                    $sql = "INSERT INTO denimattire (gender, candidate, score, `rank`, JudgeId) 
                             VALUES ('$gender', '$candidate', '$score', '$rank', '$judgeId')";
 
                     if ($con->query($sql) !== TRUE) {
@@ -44,7 +43,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $response['status'] = 'success';
                 $response['message'] = 'Thank you for your response!';
             } else {
-                $response['status'] = 'error';
                 $response['message'] = implode(', ', $errors);
             }
         } else {
@@ -58,5 +56,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 $con->close();
+header('Content-Type: application/json'); // Ensure the response is in JSON format
 echo json_encode($response);
 ?>
